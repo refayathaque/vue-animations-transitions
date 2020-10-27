@@ -12,6 +12,7 @@
   </div>
   <div class="container">
     <transition name="para">
+      <!-- vue transition tags can only have ONE direct child element -->
       <p v-if="paraIsVisible">This is only sometimes visible...</p>
     </transition>
     <button @click="toggleParagraph">Toggle Paragraph</button>

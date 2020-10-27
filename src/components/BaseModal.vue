@@ -1,6 +1,7 @@
 <template>
   <div v-if="open" class="backdrop" @click="$emit('close')"></div>
   <transition name="modal">
+    <!-- vue transition tags can only have ONE direct child element -->
     <dialog open v-if="open">
       <slot></slot>
     </dialog>
