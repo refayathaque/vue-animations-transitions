@@ -1,6 +1,12 @@
 <template>
+  <router-view v-slot="slotProps">
+    <transition name="fade-button" mode="out-in">
+      <component :is="slotProps.Component"></component>
+    </transition>
+  </router-view>
+  <!-- ^ what we need to animate switches between components with routes -->
   <div class="container">
-    <div class="block" :class="{animate: animatedBlock}"></div>
+    <div class="block" :class="{ animate: animatedBlock }"></div>
     <button @click="animateBlock">Animate</button>
   </div>
   <base-modal @close="hideDialog" :open="dialogIsVisible">
@@ -11,29 +17,57 @@
     <button @click="showDialog">Show Dialog</button>
   </div>
   <div class="container">
-    <transition name="para">
+    <transition
+      name="para"
+      @before-enter="paraTransitionBeforeEnter"
+      @before-leave="paraTransitionBeforeLeave"
+    >
       <!-- vue transition tags can only have ONE direct child element -->
       <p v-if="paraIsVisible">This is only sometimes visible...</p>
     </transition>
     <button @click="toggleParagraph">Toggle Paragraph</button>
   </div>
   <div class="container">
-    <transition enter-to-class="" enter-active-class="" enter-class="">
+    <transition name="fade-button" mode="out-in">
+      <!-- vue transition tags can only have ONE direct child element, UNLESS, you guarantee that ONLY one is added to the real DOM at any time, important to use `else` directive to achieve this -->
+      <button @click="showUsers" v-if="!usersAreVisible">Show Users</button>
+      <button @click="hideUsers" v-else>Hide Users</button>
+    </transition>
+  </div>
+  <div class="container">
+    <transition enter-to-class="" enter-active-class="">
       <p>test</p>
     </transition>
   </div>
-</template>  
+  <js-transitions></js-transitions>
+  <animated-list></animated-list>
+</template>
 
 <script>
 export default {
   data() {
-    return { 
+    return {
       dialogIsVisible: false,
       animatedBlock: false,
-      paraIsVisible: false
+      paraIsVisible: false,
+      usersAreVisible: false,
     };
   },
   methods: {
+    paraTransitionBeforeEnter(el) {
+      console.log("transition event - para before enter");
+      console.log(el);
+    },
+    paraTransitionBeforeLeave(el) {
+      console.log("transition event - para before leave");
+      console.log(el);
+    },
+    showUsers() {
+      this.usersAreVisible = true;
+    },
+    hideUsers() {
+      this.usersAreVisible = false;
+    },
     showDialog() {
       this.dialogIsVisible = true;
     },
@@ -45,7 +79,7 @@ export default {
     },
     toggleParagraph() {
       this.paraIsVisible = !this.paraIsVisible;
-    }
+    },
   },
 };
 </script>
@@ -101,13 +135,13 @@ button:active {
 }
 @keyframes slide-scale {
   0% {
-    transform: translateX(0) scale(1)
+    transform: translateX(0) scale(1);
   }
   70% {
-    transform: translateX(-120px) scale(1.1)
+    transform: translateX(-120px) scale(1.1);
   }
   100% {
-    transform: translateX(-150px) scale(1)
+    transform: translateX(-150px) scale(1);
   }
 }
 /* prefixes of these vue classes need not be e.g., `v-enter-from`, 'v' can be supplanted with a unique prefix that corresponds to the `name` attribute in the <transition></transition> tag */
@@ -135,14 +169,28 @@ button:active {
   }
 }
 .para-leave-from {
-   opacity: 1;
-   transform: translateY(0);
+  opacity: 1;
+  transform: translateY(0);
 }
 .para-leave-active {
-  transition: all 0.5s ease-in
+  transition: all 1s ease-in;
 }
 .para-leave-to {
   opacity: 0;
-  transform: translateY(30px);
+  transform: translateY(-30px);
+}
+.fade-button-enter-from,
+.fade-button-leave-to {
+  opacity: 0;
+}
+.fade-button-enter-active {
+  transition: opacity 0.3s ease-out;
+}
+.fade-button-leave-active {
+  transition: opacity 0.3s ease-in;
+}
+.fade-button-enter-to,
+.fade-button-leave-from {
+  opacity: 1;
 }
 </style>
