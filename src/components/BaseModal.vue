@@ -1,13 +1,17 @@
 <template>
-  <div class="backdrop" @click="$emit('close')"></div>
-  <dialog open>
-    <slot></slot>
-  </dialog>
+  <div v-if="open" class="backdrop" @click="$emit('close')"></div>
+  <transition name="modal">
+    <!-- vue transition tags can only have ONE direct child element -->
+    <dialog open v-if="open">
+      <slot></slot>
+    </dialog>
+  </transition>
 </template>
 
 <script>
 export default {
-  emits: ['close'],
+  props: [ 'open' ],
+  emits: [ 'close' ],
 };
 </script>
 
@@ -33,5 +37,31 @@ dialog {
   background-color: white;
   z-index: 100;
   border: none;
+}
+@keyframes modal-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes modal-leave {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.9);
+  }
+}
+.modal-enter-active {
+  animation: modal-enter 0.3s ease-out;
+}
+.modal-leave-active {
+  animation: modal-leave 0.3s ease-out;
 }
 </style>
