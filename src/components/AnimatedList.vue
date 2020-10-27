@@ -51,9 +51,9 @@ li {
   opacity: 1;
   transform: translateX(0);
 }
-
 .user-list-leave-active {
   animation: leaves-to-the-right 1s ease-in;
+  position: absolute;
 }
 @keyframes leaves-to-the-right {
   0% {
@@ -64,5 +64,8 @@ li {
     opacity: 0;
     transform: translateX(30px);
   }
+}
+.user-list-move {
+  transition: transform 1s ease;
 }
 </style>
